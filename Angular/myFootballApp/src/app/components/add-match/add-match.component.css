@@ -1,0 +1,9 @@
+#ycard:hover {
+    opacity: 1.0;
+}
+
+#ycard{
+    width: 20px; 
+    height: 20px; 
+    opacity: 0.2;
+}
