@@ -31,6 +31,7 @@ export class AddMatchComponent implements OnInit {
   htPlayers: Grouppositions[]
 
   constructor(private teamService: TeamService, private playerService: PlayerserviceService, private renderer: Renderer2) {
+    this.hometeamscore = 0;
     this.homeTeam = new Team();
     this.awayTeam = new Team();
     this.homeTeamPlayers = [];
@@ -61,6 +62,7 @@ export class AddMatchComponent implements OnInit {
 
   homeTeamz(event: any) {
     this.match.teamhome = event.value.name
+    this.match.teamhomegoals = 0;
     this.homeTeam =  null
     this.htPlayers[0].players = []
     this.htPlayers[1].players = []
@@ -105,6 +107,7 @@ export class AddMatchComponent implements OnInit {
 
   addGoal(pd: Playermatchdetails, id: number, xd: QueryList<any>) {
     pd.goals = pd.goals+1
+    this.match.teamhomegoals = this.match.teamhomegoals+1;
     const img = this.renderer.createElement('img');
     const str = 'a' + pd.id_player.toString() + pd.goals.toString();
     console.log(str)
@@ -121,6 +124,7 @@ export class AddMatchComponent implements OnInit {
 
   deleteGoal(pd: Playermatchdetails, id: number, xd: QueryList<any>) {
     pd.goals = pd.goals-1;
+    this.match.teamhomegoals = this.match.teamhomegoals-1;
     console.log(pd.goals)
     const img = this.renderer.createElement('img');
     const str = 'a' + pd.id_player.toString() + (pd.goals+1).toString();
@@ -136,6 +140,14 @@ export class AddMatchComponent implements OnInit {
 
 
   }
+  dupa: string[] = ['lol', 'xd']
+  xd = [...this.dupa, 'lol']
+  yellowCard(pd: Playermatchdetails) {
+    pd.ycards == 0 ? pd.ycards = pd.ycards+1 : pd.ycards = pd.ycards-1
+    
+  }
+
+  
 
 
 

@@ -6,4 +6,9 @@ export class Match {
     teamhomegoals: number;
     teamawaygoals: number;
     winner: string;
+    fixture: number;
+
+    setTeamHome(teamHome: string) {
+        this.teamhome = teamHome;
+    }
 }
