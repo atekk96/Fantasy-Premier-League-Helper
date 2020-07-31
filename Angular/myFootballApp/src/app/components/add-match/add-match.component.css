@@ -12,3 +12,22 @@
     width: 20px;
     height: 20px
 }
+
+#rcard:hover {
+    opacity: 1.0;
+}
+
+#rcard{
+    width: 20px;
+    height: 20px;
+    opacity: 0.2;
+}
+
+#gotRcard{
+    width: 20px;
+    height: 20px;
+}
+
+::ng-deep .minutesplayed .mat-form-field-underline {
+    display: none;
+}

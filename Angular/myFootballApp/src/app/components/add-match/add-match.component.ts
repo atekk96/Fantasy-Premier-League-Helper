@@ -18,6 +18,7 @@ export class AddMatchComponent implements OnInit {
 
   
   @ViewChildren("haha") firstChild: QueryList<any>;
+  @ViewChildren("haha2") secondChild: QueryList<any>;
 
   teams: Team[];
   homeTeam: Team;
@@ -68,6 +69,9 @@ export class AddMatchComponent implements OnInit {
     this.htPlayers[1].players = []
     this.htPlayers[2].players = []
     this.htPlayers[3].players = []
+    for(let i=0;i<11;i++) {
+      this.homeTeamPlayers[i] = new Playermatchdetails();
+    }
     // for(let i=0;i<11;i++) {
     //   this.homeTeamPlayers[0] = new Playermatchdetails();
     // }
@@ -112,7 +116,7 @@ export class AddMatchComponent implements OnInit {
     const str = 'a' + pd.id_player.toString() + pd.goals.toString();
     console.log(str)
     const array = xd.toArray();
-    this.renderer.setAttribute(img, "src", "https://image.shutterstock.com/image-photo/soccer-ball-isolated-on-white-260nw-129557066.jpg")
+    this.renderer.setAttribute(img, "src", "assets/img/goal.png")
     this.renderer.setAttribute(img, "id", str);
     this.renderer.setAttribute(img, "height", '20')
     this.renderer.setAttribute(img, 'width', '20')
@@ -122,15 +126,41 @@ export class AddMatchComponent implements OnInit {
     
   }
 
-  deleteGoal(pd: Playermatchdetails, id: number, xd: QueryList<any>) {
+  addAssist(pd: Playermatchdetails, id: number, list: QueryList<any>) {
+    pd.assists = pd.assists+1;
+    const img = this.renderer.createElement('img')
+    const str = 'b' + pd.id_player.toString() + pd.assists.toString();
+    const array = list.toArray();
+    this.renderer.setAttribute(img, "src", "assets/img/assist.jpg")
+    this.renderer.setAttribute(img, "id", str);
+    this.renderer.setAttribute(img, "height", '20');
+    this.renderer.setAttribute(img, "width", '20');
+    this.renderer.appendChild(array[id].nativeElement, img);
+  }
+
+  deleteAssist(pd: Playermatchdetails, id: number, list: QueryList<any>) {
+    pd.assists = pd.assists-1;
+    const img = this.renderer.createElement('img');
+    const str = 'b' + pd.id_player.toString() + (pd.assists+1).toString();
+    const array = list.toArray();
+    this.renderer.setAttribute(img, "src", "assets/img/assist.jpg")
+    this.renderer.setAttribute(img, "id", str);
+    this.renderer.setAttribute(img, "height", '20');
+    this.renderer.setAttribute(img, "width", '20');
+    this.renderer.removeChild(array[id].nativeElement, img);
+    const test = this.renderer.selectRootElement('#'+str);
+    this.renderer.removeChild(array[id].nativeElement, test);
+  }
+
+  deleteGoal(pd: Playermatchdetails, id: number, list: QueryList<any>) {
     pd.goals = pd.goals-1;
     this.match.teamhomegoals = this.match.teamhomegoals-1;
     console.log(pd.goals)
     const img = this.renderer.createElement('img');
     const str = 'a' + pd.id_player.toString() + (pd.goals+1).toString();
     console.log("do usuniecia " + str)
-    const array = xd.toArray();
-    this.renderer.setAttribute(img, "src", "https://image.shutterstock.com/image-photo/soccer-ball-isolated-on-white-260nw-129557066.jpg")
+    const array = list.toArray();
+    this.renderer.setAttribute(img, "src", "assets/img/goal.png")
     this.renderer.setAttribute(img, "id", str);
     this.renderer.setAttribute(img, "height", '20')
     this.renderer.setAttribute(img, 'width', '20')
@@ -140,11 +170,35 @@ export class AddMatchComponent implements OnInit {
 
 
   }
-  dupa: string[] = ['lol', 'xd']
-  xd = [...this.dupa, 'lol']
+  
   yellowCard(pd: Playermatchdetails) {
-    pd.ycards == 0 ? pd.ycards = pd.ycards+1 : pd.ycards = pd.ycards-1
-    
+    // pd.ycards == 0 ? pd.ycards = pd.ycards+1 : pd.ycards = pd.ycards-1;
+    if(pd.ycards == 0 && pd.rcards == 0) {
+      pd.ycards = pd.ycards+1;
+    } else if(pd.ycards == 1 && pd.rcards == 0) {
+      pd.ycards = pd.ycards-1;
+    } else if(pd.ycards == 2 && pd.rcards == 1) {
+      pd.ycards = pd.ycards-2;
+    } else if(pd.ycards == 0 && pd.rcards == 1) {
+      pd.ycards = pd.ycards+2;
+    }
+    console.log(pd)
+  }
+
+  redCard(pd: Playermatchdetails) {
+    // pd.rcards == 0 ? pd.rcards = pd.rcards+1 : pd.rcards = pd.rcards-1;
+    if(pd.rcards == 0 && pd.ycards == 0) {
+      pd.rcards = pd.rcards+1;
+    } else if(pd.rcards == 1 && pd.ycards == 0) {
+      pd.rcards = pd.rcards-1;
+    } else if(pd.ycards == 1 && pd.rcards == 0){
+      pd.rcards = pd.rcards+1;
+      pd.ycards = pd.ycards+1;
+    } else if(pd.ycards == 2 && pd.rcards == 1) {
+      pd.rcards = pd.rcards-1;
+      pd.ycards = pd.ycards-1;
+    }
+    console.log(pd)
   }
 
   
