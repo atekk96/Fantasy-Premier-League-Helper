@@ -19,6 +19,8 @@ export class AddMatchComponent implements OnInit {
   
   @ViewChildren("haha") firstChild: QueryList<any>;
   @ViewChildren("haha2") secondChild: QueryList<any>;
+  @ViewChildren("haha3") thirdChild: QueryList<any>;
+  @ViewChildren("haha4") fourthChild: QueryList<any>;
 
   teams: Team[];
   homeTeam: Team;
@@ -27,19 +29,26 @@ export class AddMatchComponent implements OnInit {
   hometeamscore: number;
   homeTeamSubscription: Subscription;
   homeTeamPlayersSubscription: Subscription;
+  awayTeamPlayersSubscription: Subscription;
   homeTeamPlayers: Playermatchdetails[];
+  awayTeamPlayers: Playermatchdetails[];
   // htPlayers: Player[];
-  htPlayers: Grouppositions[]
+  htPlayers: Grouppositions[];
+  atPlayers: Grouppositions[];
+
 
   constructor(private teamService: TeamService, private playerService: PlayerserviceService, private renderer: Renderer2) {
     this.hometeamscore = 0;
     this.homeTeam = new Team();
     this.awayTeam = new Team();
     this.homeTeamPlayers = [];
+    this.awayTeamPlayers = [];
     this.htPlayers = [{name: 'GK', players: []}, {name: 'DEF', players: []}, {name: 'MID', players: []}, {name: 'ATT', players: []}];
+    this.atPlayers = [{name: 'GK', players: []}, {name: 'DEF', players: []}, {name: 'MID', players: []}, {name: 'ATT', players: []}];
     this.match = new Match();
     for(let i=0;i<11;i++) {
       this.homeTeamPlayers.push(new Playermatchdetails());
+      this.awayTeamPlayers.push(new Playermatchdetails());
     }
     console.log(this.homeTeamPlayers)
    }
@@ -51,7 +60,9 @@ export class AddMatchComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.homeTeamSubscription.unsubscribe();
+    // this.homeTeamSubscription.unsubscribe();
+    this.homeTeamPlayersSubscription.unsubscribe();
+    this.awayTeamPlayersSubscription.unsubscribe();
     
   }
 
@@ -61,57 +72,67 @@ export class AddMatchComponent implements OnInit {
     
   }
 
-  homeTeamz(event: any) {
-    this.match.teamhome = event.value.name
-    this.match.teamhomegoals = 0;
-    this.homeTeam =  null
-    this.htPlayers[0].players = []
-    this.htPlayers[1].players = []
-    this.htPlayers[2].players = []
-    this.htPlayers[3].players = []
+  test() {
+    console.log(this.homeTeamPlayers)
+    console.log(this.awayTeamPlayers)
+  }
+
+  pickTeam(event: any, team: Team, players: Grouppositions[], playerDetails: Playermatchdetails[], teamSubscription: Subscription) {
+    if(team == this.homeTeam) {
+      this.match.teamhome = event.value.name
+      this.match.teamhomegoals = 0;
+    } else {
+      this.match.teamaway = event.value.name;
+      this.match.teamawaygoals = 0;
+    }
+    
+    team =  null
+    players[0].players = []
+    players[1].players = []
+    players[2].players = []
+    players[3].players = []
     for(let i=0;i<11;i++) {
-      this.homeTeamPlayers[i] = new Playermatchdetails();
+      playerDetails[i] = new Playermatchdetails();
     }
     // for(let i=0;i<11;i++) {
     //   this.homeTeamPlayers[0] = new Playermatchdetails();
     // }
-    this.homeTeamSubscription = this.teamService.getTeam(event.value.idTeam).subscribe(result => {
-      this.homeTeam = result;
-      console.log(result)
-    })
+    // this.homeTeamSubscription = this.teamService.getTeam(event.value.idTeam).subscribe(result => {
+    //   this.homeTeam = result;
+    //   console.log(result)
+    // })
     // this.homeTeamPlayersSubscription = this.playerService.getPlayersForTeam(event.value.idTeam).subscribe(result => {
     //   this.htPlayers = result;
     //   console.log(result)
     // })
-    this.homeTeamPlayersSubscription = this.playerService.getPlayersForTeam(event.value.idTeam).subscribe(result => {
+    teamSubscription = this.playerService.getPlayersForTeam(event.value.idTeam).subscribe(result => {
       result.forEach(record => {
         if(record.position == 'GK') {
-          this.htPlayers[0].players.push(record)
+          players[0].players.push(record)
         } else if(record.position == 'RB' || record.position == 'LB' || record.position == 'CB') {
-          this.htPlayers[1].players.push(record)
+          players[1].players.push(record)
         } else if(record.position == 'RM' || record.position == 'LM' || record.position == 'CM') {
-          this.htPlayers[2].players.push(record)
+          players[2].players.push(record)
         } else {
-          this.htPlayers[3].players.push(record)
+          players[3].players.push(record)
         }
       })
     })
-    console.log(this.htPlayers)
   }
 
-  test() {
-    console.log(this.match)
+
+  setPlayer(event: any, id: number, playerDetails: Playermatchdetails[]) {
+    playerDetails[id].id_team = event.value.idTeam;
+    playerDetails[id].id_player = event.value.idPlayer;
   }
 
-  setPlayer(event: any, id: number) {
-    this.homeTeamPlayers[id].id_team = event.value.idTeam;
-    this.homeTeamPlayers[id].id_player = event.value.idPlayer;
-    console.log(this.homeTeamPlayers)
-  }
-
-  addGoal(pd: Playermatchdetails, id: number, xd: QueryList<any>) {
-    pd.goals = pd.goals+1
-    this.match.teamhomegoals = this.match.teamhomegoals+1;
+  addGoal(pd: Playermatchdetails, id: number, xd: QueryList<any>, team: Team) {
+    if(team == this.homeTeam) {
+      this.match.teamhomegoals = this.match.teamhomegoals+1;
+    } else {
+      this.match.teamawaygoals = this.match.teamawaygoals+1;
+    }
+    pd.goals = pd.goals+1 
     const img = this.renderer.createElement('img');
     const str = 'a' + pd.id_player.toString() + pd.goals.toString();
     console.log(str)
@@ -122,7 +143,6 @@ export class AddMatchComponent implements OnInit {
     this.renderer.setAttribute(img, 'width', '20')
     console.log(array)
     this.renderer.appendChild(array[id].nativeElement, img)
-    console.log(this.homeTeamPlayers)
     
   }
 
@@ -152,9 +172,13 @@ export class AddMatchComponent implements OnInit {
     this.renderer.removeChild(array[id].nativeElement, test);
   }
 
-  deleteGoal(pd: Playermatchdetails, id: number, list: QueryList<any>) {
+  deleteGoal(pd: Playermatchdetails, id: number, list: QueryList<any>, team: Team) {
+    if(team == this.homeTeam) {
+      this.match.teamhomegoals = this.match.teamhomegoals-1;
+    } else {
+      this.match.teamawaygoals = this.match.teamawaygoals-1;
+    }
     pd.goals = pd.goals-1;
-    this.match.teamhomegoals = this.match.teamhomegoals-1;
     console.log(pd.goals)
     const img = this.renderer.createElement('img');
     const str = 'a' + pd.id_player.toString() + (pd.goals+1).toString();

@@ -31,3 +31,71 @@
 ::ng-deep .minutesplayed .mat-form-field-underline {
     display: none;
 }
+
+.hometeamscorehalf {
+     flex: 3;
+}
+
+.hometeamscorehalf:nth-of-type(2) {
+    flex: 1;
+}
+
+.secondteamscorehalf {
+    display: inline-block;
+    width: 40%;
+}
+
+.showscores {
+    width: 20%;
+    display: inline-block;
+}
+
+.firstteamplayers {
+    flex: 20;
+}
+
+.firstteamplayers:nth-of-type(2) {
+    flex: 1;
+}
+
+
+
+
+#haha {
+    word-wrap: break-word;
+    max-width: 100px;
+}
+
+#haha2 {
+    word-wrap: break-word;
+    max-width: 100px;
+}
+
+#haha3 {
+    word-wrap: break-word;
+    max-width: 100px;
+}
+
+#haha4 {
+    word-wrap: break-word;
+    max-width: 100px;
+}
+
+.playersstyling {
+    float: left; 
+    width: 10px; 
+}
+
+.playerwrapper {
+    display: flex;
+}
+
+.container {
+    display: flex;
+}
+
+.hometeamscorenumber {
+    /* margin-left: 450px; */
+    /* vertical-align: top; */
+    padding-top: 100px;
+}
