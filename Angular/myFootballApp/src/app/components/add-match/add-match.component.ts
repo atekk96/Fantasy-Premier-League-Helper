@@ -7,6 +7,15 @@ import { Playermatchdetails } from 'src/app/models/playermatchdetails';
 import { PlayerserviceService } from 'src/app/services/playerservice.service';
 import { Player } from 'src/app/models/player';
 import { Grouppositions } from 'src/app/models/grouppositions';
+import { FormGroup, FormControl, Form } from '@angular/forms';
+import { Validators } from '@angular/forms';
+import { FormArray } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
+
+
+interface Positions {
+  value: string;
+}
 
 @Component({
   selector: 'app-add-match',
@@ -14,7 +23,12 @@ import { Grouppositions } from 'src/app/models/grouppositions';
   styleUrls: ['./add-match.component.css'],
 
 })
+
+
+
 export class AddMatchComponent implements OnInit {
+
+
 
   
   @ViewChildren("haha") firstChild: QueryList<any>;
@@ -22,6 +36,13 @@ export class AddMatchComponent implements OnInit {
   @ViewChildren("haha3") thirdChild: QueryList<any>;
   @ViewChildren("haha4") fourthChild: QueryList<any>;
 
+  positions: Positions[] = [
+    {value: 'GK'}, {value: 'RB'}, {value: 'LB'}, {value: 'CB'}, {value: 'RM'}, {value: 'CDM'}, {value: 'CM'}, {value: 'CAM'},
+    {value: 'LM'}, {value: 'RW'}, {value: 'LW'}, {value: 'ST'}
+  ]
+
+  gameForm: FormGroup;
+  items: FormArray;
   teams: Team[];
   homeTeam: Team;
   awayTeam: Team;
@@ -37,7 +58,8 @@ export class AddMatchComponent implements OnInit {
   atPlayers: Grouppositions[];
 
 
-  constructor(private teamService: TeamService, private playerService: PlayerserviceService, private renderer: Renderer2) {
+  constructor(private teamService: TeamService, private playerService: PlayerserviceService, private renderer: Renderer2,
+              private fb: FormBuilder) {
     this.hometeamscore = 0;
     this.homeTeam = new Team();
     this.awayTeam = new Team();
@@ -57,6 +79,11 @@ export class AddMatchComponent implements OnInit {
     this.teamService.getTeams().subscribe(result => {
       this.teams = result;
     })
+    this.gameForm = this.fb.group({
+      teamHomeName: ['', Validators.required],
+      teamAwayName: ['', Validators.required],
+      items: this.fb.array([])
+    });
   }
 
   ngOnDestroy(): void {
@@ -78,6 +105,7 @@ export class AddMatchComponent implements OnInit {
   }
 
   pickTeam(event: any, team: Team, players: Grouppositions[], playerDetails: Playermatchdetails[], teamSubscription: Subscription) {
+    console.log(this.homeTeam.name + ' : ' + team.name)
     if(team == this.homeTeam) {
       this.match.teamhome = event.value.name
       this.match.teamhomegoals = 0;
@@ -85,7 +113,11 @@ export class AddMatchComponent implements OnInit {
       this.match.teamaway = event.value.name;
       this.match.teamawaygoals = 0;
     }
-    
+    if(this.items != undefined) {
+      this.items.clear()
+    }
+    console.log(this.items)
+    console.log(this.gameForm.get('items') as FormArray)
     team =  null
     players[0].players = []
     players[1].players = []
@@ -93,6 +125,7 @@ export class AddMatchComponent implements OnInit {
     players[3].players = []
     for(let i=0;i<11;i++) {
       playerDetails[i] = new Playermatchdetails();
+      this.addItem();
     }
     // for(let i=0;i<11;i++) {
     //   this.homeTeamPlayers[0] = new Playermatchdetails();
@@ -118,6 +151,7 @@ export class AddMatchComponent implements OnInit {
         }
       })
     })
+    
   }
 
 
@@ -172,7 +206,8 @@ export class AddMatchComponent implements OnInit {
     this.renderer.removeChild(array[id].nativeElement, test);
   }
 
-  deleteGoal(pd: Playermatchdetails, id: number, list: QueryList<any>, team: Team) {
+  deleteGoal(pd: Playermatchdetails, id: number, list: QueryList<any>, team: Team, item) {
+    console.log(item)
     if(team == this.homeTeam) {
       this.match.teamhomegoals = this.match.teamhomegoals-1;
     } else {
@@ -225,7 +260,45 @@ export class AddMatchComponent implements OnInit {
     console.log(pd)
   }
 
-  
+  addSubstitutePlayer(players: Playermatchdetails[]) {
+    players.push(new Playermatchdetails());
+  }
+
+  deleteSubstitutePlayer(players: Playermatchdetails[]) {
+    players.pop();
+  }
+
+  createItem(): FormGroup {
+    return this.fb.group({
+      name: '',
+      goals: '',
+      assists: '',
+      ycard: '',
+      rcard: '',
+      minutes: ['', Validators.required],
+      position: ''
+    })
+  }
+
+  addItem(): void {
+    this.items = this.gameForm.get('items') as FormArray
+    this.items.push(this.createItem())
+  }
+
+
+  onSubmit() {
+    if(this.match.teamhomegoals > this.match.teamawaygoals) {this.match.winner = this.match.teamhome} 
+    else if (this.match.teamhomegoals == this.match.teamawaygoals) {this.match.winner == null}
+    else {this.match.winner == this.match.teamaway}
+    console.log(this.match)
+  }
+
+  convertMinutesToInt(event: any, player: Playermatchdetails) {
+    console.log(event.target.value)
+    console.log('czesc')
+  }
+
+
 
 
 

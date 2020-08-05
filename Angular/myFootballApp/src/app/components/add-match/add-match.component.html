@@ -2,12 +2,14 @@
   <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   </head>
+<body>
+<form [formGroup]="gameForm">
 <div class="container">
   <div class="hometeamscorehalf">
     <div style="margin-left: 150px;">
-    <mat-form-field appearance="fill" name="homeTeamField" ngDefaultControl>
+    <mat-form-field appearance="fill">
         <mat-label>Home team</mat-label>
-        <mat-select [(ngModel)]="homeTeam" (selectionChange)="pickTeam($event, homeTeam, htPlayers, homeTeamPlayers, homeTeamPlayersSubscription)">
+        <mat-select formControlName="teamHomeName" required [(value)]="homeTeam" (selectionChange)="pickTeam($event, homeTeam, htPlayers, homeTeamPlayers, homeTeamPlayersSubscription)">
           <mat-option [disabled]="awayTeam.name == team.name" *ngFor="let team of teams" [value]="team">
             {{team.name}}
           </mat-option>
@@ -17,7 +19,7 @@
       </div>
       <!-- <mat-form-field class="example-full-width"> -->
         
-        <!-- <input [(ngModel)]="match.teamhomegoals" matInput #message maxlength="1"> -->
+        <!-- <input [(value)]="match.teamhomegoals" matInput #message maxlength="1"> -->
       <!-- </mat-form-field> -->
       
         </div>
@@ -30,9 +32,9 @@
         </div>
     <div class="hometeamscorehalf">
       <div style="margin-left: 100px;">
-      <mat-form-field appearance="fill" name="awayTeamField" ngDefaultControl>
+      <mat-form-field appearance="fill"  ngDefaultControl>
         <mat-label>Away team</mat-label>
-        <mat-select [(ngModel)]="awayTeam" (selectionChange)="pickTeam($event, awayTeam, atPlayers, awayTeamPlayers, awayTeamPlayersSubscription)">
+        <mat-select formControlName="teamAwayName" [(value)]="awayTeam" (selectionChange)="pickTeam($event, awayTeam, atPlayers, awayTeamPlayers, awayTeamPlayersSubscription)">
           <mat-option [disabled]="homeTeam.name == team.name" *ngFor="let team of teams" [value]="team">
             {{team.name}}
           </mat-option>
@@ -41,26 +43,9 @@
       </div>
     </div>
 </div>
- <!-- <div *ngFor="let detail of homeTeamPlayers; index as i">
-  
-  <mat-form-field appearance="fill" name="player" ngDefaultControl>
-    <mat-label>Player {{i+1}}</mat-label>
-    <mat-select id="lol" #lol (selectionChange)="setPlayer($event, i)">
-      <mat-option  *ngFor="let player of htPlayers" [value]="player">
-        {{player.name}} {{player.surname}}
-      </mat-option> 
-      <mat-optgroup *ngFor="let group of htPlayers; index as i" [label]="group.name">
-        <mat-option *ngFor="let player of htPlayers[i].players" [value]="player">
-          {{player.name}} {{player.surname}}
-        </mat-option>
-      </mat-optgroup>
-    </mat-select>
-    </mat-form-field>
-  
-</div> -->
 <div class="playerwrapper">
   <div class="firstteamplayers">
-<table border="1">
+<table border="1" formArrayName="items">
   <thead>
     <tr>
       <td>Player</td>
@@ -69,17 +54,16 @@
       <td>Y. Card</td>
       <td>R. Card</td>
       <td>Minutes</td>
+      <td>Position</td>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let detail of homeTeamPlayers; index as i">
+    <!-- <tr *ngFor="let detail of homeTeamPlayers; index as i"> -->
+      <tr *ngFor="let item of gameForm.controls.items.controls; let i=index" [formGroupName]="i">
       <td>
         <mat-form-field appearance="fill" name="player" ngDefaultControl>
           <mat-label>Player {{i+1}}</mat-label>
-          <mat-select id="lol" #lol (selectionChange)="setPlayer($event, i, homeTeamPlayers)">
-            <!-- <mat-option  *ngFor="let player of htPlayers" [value]="player">
-              {{player.name}} {{player.surname}}
-            </mat-option>  -->
+          <mat-select formControlName="name" required id="lol" #lol (selectionChange)="setPlayer($event, i, homeTeamPlayers)">
             <mat-optgroup *ngFor="let group of htPlayers; index as i" [label]="group.name">
               <mat-option *ngFor="let player of htPlayers[i].players" [value]="player">
                 {{player.name}} {{player.surname}}
@@ -90,72 +74,85 @@
       </td>
       <td>
         <div>
-          <div>  <!-- outsider-->
-        <div class="playersstyling" *ngIf="detail.goals > 0">
-          <i (click)="deleteGoal(detail, i, firstChild,  homeTeam)" class="fa fa-minus"></i>
+          <div> 
+        <div class="playersstyling" *ngIf="homeTeamPlayers[i]?.goals > 0">
+          <i (click)="deleteGoal(homeTeamPlayers[i], i, firstChild,  homeTeam)" class="fa fa-minus"></i>
         </div>
         <div id="haha" #haha style="float: left">
           
         </div>
-        <div class="playersstyling" *ngIf="homeTeamPlayers[i].id_player != null">
-          <i (click)="addGoal(detail, i, firstChild, homeTeam)" class="fa fa-plus"></i>
+        <div class="playersstyling" *ngIf="homeTeamPlayers[i]?.id_player != null">
+          <i (click)="addGoal(homeTeamPlayers[i], i, firstChild, homeTeam)" class="fa fa-plus"></i>
         </div>
         </div>
       </div>
 
       </td>
       <td>
-        <div class="playersstyling" *ngIf="detail.assists > 0">
-          <i (click)="deleteAssist(detail, i, secondChild)" class="fa fa-minus"></i>
+        <div class="playersstyling" *ngIf="homeTeamPlayers[i]?.assists > 0">
+          <i (click)="deleteAssist(homeTeamPlayers[i], i, secondChild)" class="fa fa-minus"></i>
         </div>
         <div id="haha2" #haha2 style="float: left"></div>
-        <div class="playersstyling" *ngIf="homeTeamPlayers[i].id_player != null">
-          <i (click)="addAssist(detail, i, secondChild)" class="fa fa-plus"></i>
+        <div class="playersstyling" *ngIf="homeTeamPlayers[i]?.id_player != null">
+          <i (click)="addAssist(homeTeamPlayers[i], i, secondChild)" class="fa fa-plus"></i>
         </div>
       </td>
 
 
       <td>
-        <div *ngIf="homeTeamPlayers[i].id_player != null">
-        <div *ngIf="detail.ycards == 0">
-          <img (click)="yellowCard(detail)" id="ycard" src="assets/img/ycard.jpg">
+        <div *ngIf="homeTeamPlayers[i]?.id_player != null">
+        <div *ngIf="homeTeamPlayers[i]?.ycards == 0">
+          <img (click)="yellowCard(homeTeamPlayers[i])" id="ycard" src="assets/img/ycard.jpg">
         </div>
-        <div *ngIf="detail.ycards > 0">
-            <img (click)="yellowCard(detail)" id="gotYcard" src="assets/img/ycard.jpg">
+        <div *ngIf="homeTeamPlayers[i]?.ycards > 0">
+            <img (click)="yellowCard(homeTeamPlayers[i])" id="gotYcard" src="assets/img/ycard.jpg">
         </div>
       </div>
       </td>
 
       <td>
-        <div *ngIf="homeTeamPlayers[i].id_player != null">
-          <div *ngIf="detail.rcards == 0">
-            <img (click)="redCard(detail)" id="rcard" src="assets/img/redcard.png">
+        <div *ngIf="homeTeamPlayers[i]?.id_player != null">
+          <div *ngIf="homeTeamPlayers[i]?.rcards == 0">
+            <img (click)="redCard(homeTeamPlayers[i])" id="rcard" src="assets/img/redcard.png">
           </div>
-          <div *ngIf="detail.rcards > 0">
-            <img (click)="redCard(detail)" id="gotRcard" src="assets/img/redcard.png">
+          <div *ngIf="homeTeamPlayers[i]?.rcards > 0">
+            <img (click)="redCard(homeTeamPlayers[i])" id="gotRcard" src="assets/img/redcard.png">
           </div>
         </div>
       </td>
       <td>
-        <div *ngIf="homeTeamPlayers[i].id_player != null">
+        <div *ngIf="homeTeamPlayers[i]?.id_player != null">
           <div style="width: 30px" class="minutesplayed">
           <mat-form-field>
-            <input matInput pattern="[1-9][0-9]{2}" maxlength="3" [(ngModel)]="detail.minutesplayed">
+            <input formControlName="minutes" (change)="convertMinutesToInt($event, homeTeamPlayers[i])" matInput pattern="[1-9][0-9]{2}" maxlength="3">
           </mat-form-field>
         </div>
         </div>
 
       </td>
+      <td>
+        <div *ngIf="homeTeamPlayers[i]?.id_player != null">
+          <div>
+            <mat-select [(value)]="homeTeamPlayers[i].position" id="position" #position>
+                <mat-option  *ngFor="let position of positions" [value]="position.value">
+                  {{position.value}}
+                </mat-option>
+            </mat-select>
+          </div>
+        </div>
+      </td>
     </tr>
   </tbody>
 
 </table>
+<i *ngIf="homeTeamPlayers.length > 11" (click)="deleteSubstitutePlayer(homeTeamPlayers)" class="fa fa-minus"></i>
+<i *ngIf="homeTeamPlayers.length < 16" (click)="addSubstitutePlayer(homeTeamPlayers)" class="fa fa-plus"></i>
 </div>
 <div class="firstteamplayers">
 
 </div>
 <div class="firstteamplayers">
-<table border="1">
+<table border="1" style="float: left;">
   <thead>
     <tr>
       <td>Player</td>
@@ -172,9 +169,6 @@
         <mat-form-field appearance="fill" name="player" ngDefaultControl>
           <mat-label>Player {{i+1}}</mat-label>
           <mat-select id="lol" #lol (selectionChange)="setPlayer($event, i, awayTeamPlayers)">
-            <!-- <mat-option  *ngFor="let player of htPlayers" [value]="player">
-              {{player.name}} {{player.surname}}
-            </mat-option>  -->
             <mat-optgroup *ngFor="let group of atPlayers; index as i" [label]="group.name">
               <mat-option *ngFor="let player of atPlayers[i].players" [value]="player">
                 {{player.name}} {{player.surname}}
@@ -185,7 +179,7 @@
       </td>
       <td>
         <div>
-          <div>  <!-- outsider-->
+          <div>
         <div class="playersstyling" *ngIf="detail.goals > 0">
           <i (click)="deleteGoal(detail, i, thirdChild, awayTeam)" class="fa fa-minus"></i>
         </div>
@@ -235,7 +229,7 @@
         <div *ngIf="awayTeamPlayers[i].id_player != null">
           <div style="width: 30px" class="minutesplayed">
           <mat-form-field>
-            <input matInput pattern="[1-9][0-9]{2}" maxlength="3" [(ngModel)]="detail.minutesplayed">
+            <input matInput pattern="[1-9][0-9]{2}" maxlength="3" [(value)]="detail.minutesplayed">
           </mat-form-field>
         </div>
         </div>
@@ -245,7 +239,11 @@
   </tbody>
 
 </table>
+<i *ngIf="awayTeamPlayers.length > 11" (click)="deleteSubstitutePlayer(awayTeamPlayers)" class="fa fa-minus"></i>
+<i *ngIf="awayTeamPlayers.length < 16" (click)="addSubstitutePlayer(awayTeamPlayers)" class="fa fa-plus"></i>
 </div>
 </div>
-<button (click)="test()">TEST</button>
+<button type="submit">ELDO</button>
+</form>
+</body>
 </html>
