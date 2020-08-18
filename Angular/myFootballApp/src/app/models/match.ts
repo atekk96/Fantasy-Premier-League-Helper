@@ -1,14 +1,10 @@
 export class Match {
-    id_match?: number;
-    season: string;
-    teamhome: string;
-    teamaway: string;
-    teamhomegoals: number;
-    teamawaygoals: number;
-    winner: string;
+    idMatch?: number;
+    season: string = '19/20';
+    teamHome: number;
+    teamAway: number;
+    teamHomeGoals: number;
+    teamAwayGoals: number;
+    winner: number;
     fixture: number;
-
-    setTeamHome(teamHome: string) {
-        this.teamhome = teamHome;
-    }
 }

@@ -9,7 +9,7 @@
     <div style="margin-left: 150px;">
     <mat-form-field appearance="fill">
         <mat-label>Home team</mat-label>
-        <mat-select formControlName="teamHomeName" required [(value)]="homeTeam" (selectionChange)="pickTeam($event, homeTeam, htPlayers, homeTeamPlayers, homeTeamPlayersSubscription)">
+        <mat-select required formControlName="teamHomeName"  [(value)]="homeTeam" (selectionChange)="pickTeam($event, homeTeam, htPlayers, homeTeamPlayers, homeTeamPlayersSubscription)">
           <mat-option [disabled]="awayTeam.name == team.name" *ngFor="let team of teams" [value]="team">
             {{team.name}}
           </mat-option>
@@ -25,16 +25,20 @@
         </div>
         <div class="hometeamscorehalf">
           <div style="text-align: left;">
-          <mat-label class="mat-display-1">{{match.teamhomegoals}}</mat-label>
+          <mat-label class="mat-display-1">{{match.teamHomeGoals}}</mat-label>
           <mat-label class="mat-display-1">:</mat-label>
-          <mat-label class="mat-display-1">{{match.teamawaygoals}}</mat-label>
+          <mat-label class="mat-display-1">{{match.teamAwayGoals}}</mat-label>
+          </div>
+          <div>
+            <mat-label>Fixture</mat-label>
+            <input formControlName="fixture"  (change)="convertFixtureToInt($event)" matInput pattern="^([1-9][0-9]{0,1})$" maxlength="2">
           </div>
         </div>
     <div class="hometeamscorehalf">
       <div style="margin-left: 100px;">
       <mat-form-field appearance="fill"  ngDefaultControl>
         <mat-label>Away team</mat-label>
-        <mat-select formControlName="teamAwayName" [(value)]="awayTeam" (selectionChange)="pickTeam($event, awayTeam, atPlayers, awayTeamPlayers, awayTeamPlayersSubscription)">
+        <mat-select  formControlName="teamAwayName" [(value)]="awayTeam" (selectionChange)="pickTeam($event, awayTeam, atPlayers, awayTeamPlayers, awayTeamPlayersSubscription)">
           <mat-option [disabled]="homeTeam.name == team.name" *ngFor="let team of teams" [value]="team">
             {{team.name}}
           </mat-option>
@@ -63,10 +67,10 @@
       <td>
         <mat-form-field appearance="fill" name="player" ngDefaultControl>
           <mat-label>Player {{i+1}}</mat-label>
-          <mat-select formControlName="name" required id="lol" #lol (selectionChange)="setPlayer($event, i, homeTeamPlayers)">
-            <mat-optgroup *ngFor="let group of htPlayers; index as i" [label]="group.name">
-              <mat-option *ngFor="let player of htPlayers[i].players" [value]="player">
-                {{player.name}} {{player.surname}}
+          <mat-select required  formControlName="name" id="lol" #lol>
+            <mat-optgroup *ngFor="let group of htPlayers; index as j" [label]="group.name">
+              <mat-option (click)="setPlayer(homeTeam, i, j, g, homeTeamPlayers, 'items', htPlayers)"  [disabled]="htPlayers[j].players[g].enabled == false" *ngFor="let player of htPlayers[j].players; let g=index" [value]="player">
+                {{player.player.name}} {{player.player.surname}}
               </mat-option>
             </mat-optgroup>
           </mat-select>
@@ -124,7 +128,7 @@
         <div *ngIf="homeTeamPlayers[i]?.id_player != null">
           <div style="width: 30px" class="minutesplayed">
           <mat-form-field>
-            <input formControlName="minutes" (change)="convertMinutesToInt($event, homeTeamPlayers[i])" matInput pattern="[1-9][0-9]{2}" maxlength="3">
+            <input formControlName="minutes" required (change)="convertMinutesToInt($event, homeTeamPlayers[i])" matInput pattern="^([1-9][0-9]{0,2})$" maxlength="3">
           </mat-form-field>
         </div>
         </div>
@@ -133,7 +137,7 @@
       <td>
         <div *ngIf="homeTeamPlayers[i]?.id_player != null">
           <div>
-            <mat-select [(value)]="homeTeamPlayers[i].position" id="position" #position>
+            <mat-select required formControlName="position" [(value)]="homeTeamPlayers[i].position" id="position" #position>
                 <mat-option  *ngFor="let position of positions" [value]="position.value">
                   {{position.value}}
                 </mat-option>
@@ -146,13 +150,13 @@
 
 </table>
 <i *ngIf="homeTeamPlayers.length > 11" (click)="deleteSubstitutePlayer(homeTeamPlayers)" class="fa fa-minus"></i>
-<i *ngIf="homeTeamPlayers.length < 16" (click)="addSubstitutePlayer(homeTeamPlayers)" class="fa fa-plus"></i>
+<i *ngIf="homeTeamPlayers.length < 16" (click)="addSubstitutePlayer(homeTeamPlayers, homeTeam)" class="fa fa-plus"></i>
 </div>
 <div class="firstteamplayers">
 
 </div>
 <div class="firstteamplayers">
-<table border="1" style="float: left;">
+<table border="1" formArrayName="itemsSecondTeam" style="float: left;">
   <thead>
     <tr>
       <td>Player</td>
@@ -161,17 +165,18 @@
       <td>Y. Card</td>
       <td>R. Card</td>
       <td>Minutes</td>
+      <td>Position</td>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let detail of awayTeamPlayers; index as i">
+    <tr *ngFor="let item of gameForm.controls.itemsSecondTeam.controls; let i=index" [formGroupName]="i">
       <td>
         <mat-form-field appearance="fill" name="player" ngDefaultControl>
           <mat-label>Player {{i+1}}</mat-label>
-          <mat-select id="lol" #lol (selectionChange)="setPlayer($event, i, awayTeamPlayers)">
-            <mat-optgroup *ngFor="let group of atPlayers; index as i" [label]="group.name">
-              <mat-option *ngFor="let player of atPlayers[i].players" [value]="player">
-                {{player.name}} {{player.surname}}
+          <mat-select required formControlName="name" id="lol" #lol>
+            <mat-optgroup *ngFor="let group of atPlayers; index as j" [label]="group.name">
+              <mat-option (click)="setPlayer(awayTeam, i, j, g, awayTeamPlayers, 'itemsSecondTeam', atPlayers)" [disabled]="atPlayers[j].players[g].enabled == false" *ngFor="let player of atPlayers[j].players; let g=index" [value]="player">
+                {{player.player.name}} {{player.player.surname}}
               </mat-option>
             </mat-optgroup>
           </mat-select>
@@ -180,60 +185,71 @@
       <td>
         <div>
           <div>
-        <div class="playersstyling" *ngIf="detail.goals > 0">
-          <i (click)="deleteGoal(detail, i, thirdChild, awayTeam)" class="fa fa-minus"></i>
+        <div class="playersstyling" *ngIf="awayTeamPlayers[i]?.goals > 0">
+          <i (click)="deleteGoal(awayTeamPlayers[i], i, thirdChild, awayTeam)" class="fa fa-minus"></i>
         </div>
         <div id="haha3" #haha3 style="float: left">
           
         </div>
-        <div class="playersstyling" *ngIf="awayTeamPlayers[i].id_player != null">
-          <i (click)="addGoal(detail, i, thirdChild, awayTeam)" class="fa fa-plus"></i>
+        <div class="playersstyling" *ngIf="awayTeamPlayers[i]?.id_player != null">
+          <i (click)="addGoal(awayTeamPlayers[i], i, thirdChild, awayTeam)" class="fa fa-plus"></i>
         </div>
         </div>
       </div>
 
       </td>
       <td>
-        <div class="playersstyling" *ngIf="detail.assists > 0">
-          <i (click)="deleteAssist(detail, i, fourthChild)" class="fa fa-minus"></i>
+        <div class="playersstyling" *ngIf="awayTeamPlayers[i]?.assists > 0">
+          <i (click)="deleteAssist(awayTeamPlayers[i], i, fourthChild)" class="fa fa-minus"></i>
         </div>
         <div id="haha4" #haha4 style="float: left"></div>
-        <div class="playersstyling" *ngIf="awayTeamPlayers[i].id_player != null">
-          <i (click)="addAssist(detail, i, fourthChild)" class="fa fa-plus"></i>
+        <div class="playersstyling" *ngIf="awayTeamPlayers[i]?.id_player != null">
+          <i (click)="addAssist(awayTeamPlayers[i], i, fourthChild)" class="fa fa-plus"></i>
         </div>
       </td>
 
 
       <td>
-        <div *ngIf="awayTeamPlayers[i].id_player != null">
-        <div *ngIf="detail.ycards == 0">
-          <img (click)="yellowCard(detail)" id="ycard" src="assets/img/ycard.jpg">
+        <div *ngIf="awayTeamPlayers[i]?.id_player != null">
+        <div *ngIf="awayTeamPlayers[i]?.ycards == 0">
+          <img (click)="yellowCard(awayTeamPlayers[i])" id="ycard" src="assets/img/ycard.jpg">
         </div>
-        <div *ngIf="detail.ycards > 0">
-            <img (click)="yellowCard(detail)" id="gotYcard" src="assets/img/ycard.jpg">
+        <div *ngIf="awayTeamPlayers[i]?.ycards > 0">
+            <img (click)="yellowCard(awayTeamPlayers[i])" id="gotYcard" src="assets/img/ycard.jpg">
         </div>
       </div>
       </td>
 
       <td>
-        <div *ngIf="awayTeamPlayers[i].id_player != null">
-          <div *ngIf="detail.rcards == 0">
-            <img (click)="redCard(detail)" id="rcard" src="assets/img/redcard.png">
+        <div *ngIf="awayTeamPlayers[i]?.id_player != null">
+          <div *ngIf="awayTeamPlayers[i]?.rcards == 0">
+            <img (click)="redCard(awayTeamPlayers[i])" id="rcard" src="assets/img/redcard.png">
           </div>
-          <div *ngIf="detail.rcards > 0">
-            <img (click)="redCard(detail)" id="gotRcard" src="assets/img/redcard.png">
+          <div *ngIf="awayTeamPlayers[i]?.rcards > 0">
+            <img (click)="redCard(awayTeamPlayers[i])" id="gotRcard" src="assets/img/redcard.png">
           </div>
         </div>
       </td>
       <td>
-        <div *ngIf="awayTeamPlayers[i].id_player != null">
+        <div *ngIf="awayTeamPlayers[i]?.id_player != null">
           <div style="width: 30px" class="minutesplayed">
           <mat-form-field>
-            <input matInput pattern="[1-9][0-9]{2}" maxlength="3" [(value)]="detail.minutesplayed">
+            <input required formControlName="minutes" matInput (change)="convertMinutesToInt($event, awayTeamPlayers[i])" pattern="^([1-9][0-9]{0,2})$" maxlength="3" [(value)]="awayTeamPlayers[i].minutesplayed">
           </mat-form-field>
         </div>
         </div>
 
+      </td>
+      <td>
+        <div *ngIf="awayTeamPlayers[i]?.id_player != null">
+          <div>
+            <mat-select required formControlName="position" [(value)]="awayTeamPlayers[i].position" id="position2" #position2>
+                <mat-option  *ngFor="let position of positions" [value]="position.value">
+                  {{position.value}}
+                </mat-option>
+            </mat-select>
+          </div>
+        </div>
       </td>
     </tr>
   </tbody>
@@ -243,7 +259,7 @@
 <i *ngIf="awayTeamPlayers.length < 16" (click)="addSubstitutePlayer(awayTeamPlayers)" class="fa fa-plus"></i>
 </div>
 </div>
-<button type="submit">ELDO</button>
+<button type="submit" (click)="onSubmit()">ELDO</button>
 </form>
 </body>
 </html>

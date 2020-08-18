@@ -2,5 +2,8 @@ import { Player } from './player';
 
 export class Grouppositions {
         name: string;
-        players: Player[] = [];
+        players: any[] = [{
+                player: Player,
+                enabled: true
+        }]
 }

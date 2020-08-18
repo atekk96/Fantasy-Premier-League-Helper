@@ -16,4 +16,5 @@ export class Player {
 		jerseynumber: number;
 		name: string;
 		surname: string;
+		enabled?: boolean = true;
 }
