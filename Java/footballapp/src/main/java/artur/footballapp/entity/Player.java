@@ -63,6 +63,9 @@ public class Player {
 	
 	@Column(name="surname")
 	private String surname;
+	
+	@Column(name="owngoals")
+	private int owngoals;
 
 	@Column(name="id_team")
 	private int idTeam;
@@ -204,9 +207,17 @@ public class Player {
 		this.surname = surname;
 	}
 
+	public int getOwngoals() {
+		return owngoals;
+	}
+
+	public void setOwngoals(int owngoals) {
+		this.owngoals = owngoals;
+	}
+
 	public Player(int idPlayer, int idTeam, String season, int appearances, int goals, int assists, String nationality,
 			String position, int yellowcard, int redcard, int minutesplayed, int cleansheet, BigDecimal averagerating,
-			boolean isactive, int jerseynumber, String name, String surname) {
+			boolean isactive, int jerseynumber, String name, String surname, int owngoals) {
 		super();
 		this.idPlayer = idPlayer;
 		this.idTeam = idTeam;
@@ -225,6 +236,7 @@ public class Player {
 		this.jerseynumber = jerseynumber;
 		this.name = name;
 		this.surname = surname;
+		this.owngoals = owngoals;
 	}
 	
 	public Player() {
@@ -237,8 +249,11 @@ public class Player {
 				+ goals + ", assists=" + assists + ", nationality=" + nationality + ", position=" + position
 				+ ", yellowcard=" + yellowcard + ", redcard=" + redcard + ", minutesplayed=" + minutesplayed
 				+ ", cleansheet=" + cleansheet + ", averagerating=" + averagerating + ", isactive=" + isactive
-				+ ", jerseynumber=" + jerseynumber + ", name=" + name + ", surname=" + surname + "]";
+				+ ", jerseynumber=" + jerseynumber + ", name=" + name + ", surname=" + surname + ", owngoals="
+				+ owngoals + ", idTeam=" + idTeam + "]";
 	}
+
+
 	
 	
 	

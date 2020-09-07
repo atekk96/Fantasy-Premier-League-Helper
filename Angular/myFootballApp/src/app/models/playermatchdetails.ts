@@ -10,4 +10,6 @@ export class Playermatchdetails {
     ycards: number = 0;
     rcards: number = 0;
     minutesplayed: number = 0;
+    owngoals: number = 0;
+    rating: number = 0;
 }

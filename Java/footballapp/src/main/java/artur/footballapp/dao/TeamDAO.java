@@ -8,5 +8,6 @@ public interface TeamDAO {
 
 	public List<Team> getTeams();
 	public Team getTeamById(int id);
+	public void updateTeam(Team team);
 	
 }

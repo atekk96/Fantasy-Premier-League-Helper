@@ -26,4 +26,8 @@ export class PlayerserviceService {
      return this.http.get<Player[]>(this.playersUrl+'/'+ id);
    }
 
+   public getPlayerById(id: number): Observable<Player> {
+     return this.http.get<Player>(this.playersUrl + '/player/' + id);
+   }
+
 }

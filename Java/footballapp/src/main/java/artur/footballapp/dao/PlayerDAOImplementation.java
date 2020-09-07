@@ -32,7 +32,6 @@ public class PlayerDAOImplementation implements PlayerDAO {
 		
 		//save customer to db
 		currentSession.saveOrUpdate(player);
-		currentSession.getTransaction().commit();
 		
 	}
 
@@ -53,6 +52,16 @@ public class PlayerDAOImplementation implements PlayerDAO {
 		theQuery.setParameter("id", id);
 		List<Player> players = theQuery.getResultList();
 		return players;
+	}
+
+	@Override
+	@Transactional
+	public Player getPlayerById(int id) {
+		Session currentSession = entityManager.unwrap(Session.class);
+		Query<Player> theQuery = currentSession.createQuery("from Player where idPlayer=:id", Player.class);
+		theQuery.setParameter("id", id);
+		Player player = theQuery.getSingleResult();
+		return player;
 	}
 
 }

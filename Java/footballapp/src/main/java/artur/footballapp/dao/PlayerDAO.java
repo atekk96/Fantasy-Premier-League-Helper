@@ -11,5 +11,6 @@ public interface PlayerDAO {
 	public void addPlayer(Player player);
 	public List<Player> getAllPlayers();
 	public List<Player> getPlayersForTeam(int id);
+	public Player getPlayerById(int id);
 
 }

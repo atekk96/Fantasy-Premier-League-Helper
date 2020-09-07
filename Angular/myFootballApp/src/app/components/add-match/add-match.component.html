@@ -54,11 +54,13 @@
     <tr>
       <td>Player</td>
       <td>Goals</td>
+      <td>OG</td>
       <td>Assists</td>
       <td>Y. Card</td>
       <td>R. Card</td>
       <td>Minutes</td>
       <td>Position</td>
+      <td>Rating</td>
     </tr>
   </thead>
   <tbody>
@@ -80,13 +82,29 @@
         <div>
           <div> 
         <div class="playersstyling" *ngIf="homeTeamPlayers[i]?.goals > 0">
-          <i (click)="deleteGoal(homeTeamPlayers[i], i, firstChild,  homeTeam)" class="fa fa-minus"></i>
+          <i (click)="deleteGoal(homeTeamPlayers[i], homePlayers[i], i, firstChild,  homeTeam)" class="fa fa-minus"></i>
         </div>
         <div id="haha" #haha style="float: left">
           
         </div>
         <div class="playersstyling" *ngIf="homeTeamPlayers[i]?.id_player != null">
-          <i (click)="addGoal(homeTeamPlayers[i], i, firstChild, homeTeam)" class="fa fa-plus"></i>
+          <i (click)="addGoal(homeTeamPlayers[i], homePlayers[i], i, firstChild, homeTeam)" class="fa fa-plus"></i>
+        </div>
+        </div>
+      </div>
+
+      </td>
+      <td>
+        <div>
+          <div>
+        <div class="playersstyling" *ngIf="homeTeamPlayers[i]?.owngoals > 0">
+          <i (click)="deleteOwnGoal(homeTeamPlayers[i], homePlayers[i], i, ogHome, homeTeam)" class="fa fa-minus"></i>
+        </div>
+        <div id="ownGoalHome" #ownGoalHome style="float: left">
+          
+        </div>
+        <div class="playersstyling" *ngIf="homeTeamPlayers[i]?.id_player != null">
+          <i (click)="addOwnGoal(homeTeamPlayers[i], homePlayers[i], i, ogHome, homeTeam)" class="fa fa-plus"></i>
         </div>
         </div>
       </div>
@@ -94,11 +112,11 @@
       </td>
       <td>
         <div class="playersstyling" *ngIf="homeTeamPlayers[i]?.assists > 0">
-          <i (click)="deleteAssist(homeTeamPlayers[i], i, secondChild)" class="fa fa-minus"></i>
+          <i (click)="deleteAssist(homeTeamPlayers[i], homePlayers[i], i, secondChild)" class="fa fa-minus"></i>
         </div>
         <div id="haha2" #haha2 style="float: left"></div>
         <div class="playersstyling" *ngIf="homeTeamPlayers[i]?.id_player != null">
-          <i (click)="addAssist(homeTeamPlayers[i], i, secondChild)" class="fa fa-plus"></i>
+          <i (click)="addAssist(homeTeamPlayers[i], homePlayers[i], i, secondChild)" class="fa fa-plus"></i>
         </div>
       </td>
 
@@ -106,10 +124,10 @@
       <td>
         <div *ngIf="homeTeamPlayers[i]?.id_player != null">
         <div *ngIf="homeTeamPlayers[i]?.ycards == 0">
-          <img (click)="yellowCard(homeTeamPlayers[i])" id="ycard" src="assets/img/ycard.jpg">
+          <img (click)="yellowCard(homeTeamPlayers[i], homePlayers[i])" id="ycard" src="assets/img/ycard.jpg">
         </div>
         <div *ngIf="homeTeamPlayers[i]?.ycards > 0">
-            <img (click)="yellowCard(homeTeamPlayers[i])" id="gotYcard" src="assets/img/ycard.jpg">
+            <img (click)="yellowCard(homeTeamPlayers[i], homePlayers[i])" id="gotYcard" src="assets/img/ycard.jpg">
         </div>
       </div>
       </td>
@@ -117,18 +135,18 @@
       <td>
         <div *ngIf="homeTeamPlayers[i]?.id_player != null">
           <div *ngIf="homeTeamPlayers[i]?.rcards == 0">
-            <img (click)="redCard(homeTeamPlayers[i])" id="rcard" src="assets/img/redcard.png">
+            <img (click)="redCard(homeTeamPlayers[i], homePlayers[i])" id="rcard" src="assets/img/redcard.png">
           </div>
           <div *ngIf="homeTeamPlayers[i]?.rcards > 0">
-            <img (click)="redCard(homeTeamPlayers[i])" id="gotRcard" src="assets/img/redcard.png">
+            <img (click)="redCard(homeTeamPlayers[i], homePlayers[i])" id="gotRcard" src="assets/img/redcard.png">
           </div>
         </div>
       </td>
       <td>
         <div *ngIf="homeTeamPlayers[i]?.id_player != null">
-          <div style="width: 30px" class="minutesplayed">
+          <div style="width: 10px" class="minutesplayed">
           <mat-form-field>
-            <input formControlName="minutes" required (change)="convertMinutesToInt($event, homeTeamPlayers[i])" matInput pattern="^([1-9][0-9]{0,2})$" maxlength="3">
+            <input style="width: 30px;" formControlName="minutes" required (change)="convertMinutesToInt($event, homeTeamPlayers[i], homePlayers[i])" matInput pattern="^([1-9][0-9]{0,2})$" maxlength="3">
           </mat-form-field>
         </div>
         </div>
@@ -145,12 +163,23 @@
           </div>
         </div>
       </td>
+      <td>
+        <div *ngIf="homeTeamPlayers[i]?.id_player != null">
+          <div>
+            <mat-select required  [(value)]="homeTeamPlayers[i].rating" id="rating" #rating>
+                <mat-option  *ngFor="let rating of ratings" [value]="rating.value">
+                  {{rating.value}}
+                </mat-option>
+            </mat-select>
+          </div>
+        </div>
+      </td>
     </tr>
   </tbody>
 
 </table>
-<i *ngIf="homeTeamPlayers.length > 11" (click)="deleteSubstitutePlayer(homeTeamPlayers)" class="fa fa-minus"></i>
-<i *ngIf="homeTeamPlayers.length < 16" (click)="addSubstitutePlayer(homeTeamPlayers, homeTeam)" class="fa fa-plus"></i>
+<i *ngIf="homeTeamPlayers.length > 11" (click)="deleteSubstitutePlayer(homeTeamPlayers, homePlayers)" class="fa fa-minus"></i>
+<i *ngIf="homeTeamPlayers.length < 16" (click)="addSubstitutePlayer(homeTeamPlayers, homeTeam, homePlayers)" class="fa fa-plus"></i>
 </div>
 <div class="firstteamplayers">
 
@@ -161,6 +190,7 @@
     <tr>
       <td>Player</td>
       <td>Goals</td>
+      <td>OG</td>
       <td>Assists</td>
       <td>Y. Card</td>
       <td>R. Card</td>
@@ -186,13 +216,29 @@
         <div>
           <div>
         <div class="playersstyling" *ngIf="awayTeamPlayers[i]?.goals > 0">
-          <i (click)="deleteGoal(awayTeamPlayers[i], i, thirdChild, awayTeam)" class="fa fa-minus"></i>
+          <i (click)="deleteGoal(awayTeamPlayers[i], awayPlayers[i], i, thirdChild, awayTeam)" class="fa fa-minus"></i>
         </div>
         <div id="haha3" #haha3 style="float: left">
           
         </div>
         <div class="playersstyling" *ngIf="awayTeamPlayers[i]?.id_player != null">
-          <i (click)="addGoal(awayTeamPlayers[i], i, thirdChild, awayTeam)" class="fa fa-plus"></i>
+          <i (click)="addGoal(awayTeamPlayers[i], awayPlayers[i], i, thirdChild, awayTeam)" class="fa fa-plus"></i>
+        </div>
+        </div>
+      </div>
+
+      </td>
+      <td>
+        <div>
+          <div>
+        <div class="playersstyling" *ngIf="awayTeamPlayers[i]?.owngoals > 0">
+          <i (click)="deleteOwnGoal(awayTeamPlayers[i], awayPlayers[i], i, ogAway, awayTeam)" class="fa fa-minus"></i>
+        </div>
+        <div id="ownGoalAway" #ownGoalAway style="float: left">
+          
+        </div>
+        <div class="playersstyling" *ngIf="homeTeamPlayers[i]?.id_player != null">
+          <i (click)="addOwnGoal(awayTeamPlayers[i], awayPlayers[i], i, ogAway, awayTeam)" class="fa fa-plus"></i>
         </div>
         </div>
       </div>
@@ -200,11 +246,11 @@
       </td>
       <td>
         <div class="playersstyling" *ngIf="awayTeamPlayers[i]?.assists > 0">
-          <i (click)="deleteAssist(awayTeamPlayers[i], i, fourthChild)" class="fa fa-minus"></i>
+          <i (click)="deleteAssist(awayTeamPlayers[i], awayPlayers[i], i, fourthChild)" class="fa fa-minus"></i>
         </div>
         <div id="haha4" #haha4 style="float: left"></div>
         <div class="playersstyling" *ngIf="awayTeamPlayers[i]?.id_player != null">
-          <i (click)="addAssist(awayTeamPlayers[i], i, fourthChild)" class="fa fa-plus"></i>
+          <i (click)="addAssist(awayTeamPlayers[i], awayPlayers[i], i, fourthChild)" class="fa fa-plus"></i>
         </div>
       </td>
 
@@ -212,10 +258,10 @@
       <td>
         <div *ngIf="awayTeamPlayers[i]?.id_player != null">
         <div *ngIf="awayTeamPlayers[i]?.ycards == 0">
-          <img (click)="yellowCard(awayTeamPlayers[i])" id="ycard" src="assets/img/ycard.jpg">
+          <img (click)="yellowCard(awayTeamPlayers[i], awayPlayers[i])" id="ycard" src="assets/img/ycard.jpg">
         </div>
         <div *ngIf="awayTeamPlayers[i]?.ycards > 0">
-            <img (click)="yellowCard(awayTeamPlayers[i])" id="gotYcard" src="assets/img/ycard.jpg">
+            <img (click)="yellowCard(awayTeamPlayers[i], awayPlayers[i])" id="gotYcard" src="assets/img/ycard.jpg">
         </div>
       </div>
       </td>
@@ -223,10 +269,10 @@
       <td>
         <div *ngIf="awayTeamPlayers[i]?.id_player != null">
           <div *ngIf="awayTeamPlayers[i]?.rcards == 0">
-            <img (click)="redCard(awayTeamPlayers[i])" id="rcard" src="assets/img/redcard.png">
+            <img (click)="redCard(awayTeamPlayers[i], awayPlayers[i])" id="rcard" src="assets/img/redcard.png">
           </div>
           <div *ngIf="awayTeamPlayers[i]?.rcards > 0">
-            <img (click)="redCard(awayTeamPlayers[i])" id="gotRcard" src="assets/img/redcard.png">
+            <img (click)="redCard(awayTeamPlayers[i], awayPlayers[i])" id="gotRcard" src="assets/img/redcard.png">
           </div>
         </div>
       </td>
@@ -234,7 +280,7 @@
         <div *ngIf="awayTeamPlayers[i]?.id_player != null">
           <div style="width: 30px" class="minutesplayed">
           <mat-form-field>
-            <input required formControlName="minutes" matInput (change)="convertMinutesToInt($event, awayTeamPlayers[i])" pattern="^([1-9][0-9]{0,2})$" maxlength="3" [(value)]="awayTeamPlayers[i].minutesplayed">
+            <input required formControlName="minutes" matInput (change)="convertMinutesToInt($event, awayTeamPlayers[i], awayPlayers[i])" pattern="^([1-9][0-9]{0,2})$" maxlength="3" [(value)]="awayTeamPlayers[i].minutesplayed">
           </mat-form-field>
         </div>
         </div>
@@ -251,12 +297,17 @@
           </div>
         </div>
       </td>
+      <td>
+        <div *ngIf="awayTeamPlayers[i]?.id_player != null">
+
+        </div>
+      </td>
     </tr>
   </tbody>
 
 </table>
-<i *ngIf="awayTeamPlayers.length > 11" (click)="deleteSubstitutePlayer(awayTeamPlayers)" class="fa fa-minus"></i>
-<i *ngIf="awayTeamPlayers.length < 16" (click)="addSubstitutePlayer(awayTeamPlayers)" class="fa fa-plus"></i>
+<i *ngIf="awayTeamPlayers.length > 11" (click)="deleteSubstitutePlayer(awayTeamPlayers, awayPlayers)" class="fa fa-minus"></i>
+<i *ngIf="awayTeamPlayers.length < 16" (click)="addSubstitutePlayer(awayTeamPlayers, awayTeam, awayPlayers)" class="fa fa-plus"></i>
 </div>
 </div>
 <button type="submit" (click)="onSubmit()">ELDO</button>

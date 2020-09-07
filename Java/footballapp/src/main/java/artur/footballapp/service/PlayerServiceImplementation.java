@@ -28,8 +28,15 @@ public class PlayerServiceImplementation implements PlayerService {
 	}
 
 	@Override
+	@Transactional
 	public List<Player> getPlayersForTeam(int id) {
 		return playerDAO.getPlayersForTeam(id);
+	}
+
+	@Override
+	@Transactional
+	public Player getPlayerById(int id) {
+		return playerDAO.getPlayerById(id);
 	}
 
 }

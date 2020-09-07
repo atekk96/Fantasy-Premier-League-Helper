@@ -46,6 +46,12 @@ public class PlayerMatchDetail {
 	@Column(name="minutesplayed")
 	private int minutesplayed;
 	
+	@Column(name="owngoals")
+	private int owngoals;
+	
+	@Column(name="rating")
+	private int rating;
+	
 	public PlayerMatchDetail() {
 		
 	}
@@ -53,7 +59,7 @@ public class PlayerMatchDetail {
 	
 	
 	public PlayerMatchDetail(int id, int id_match, int id_player, int id_team, String position, String season,
-			int goals, int assists, int ycards, int rcards, int minutesplayed) {
+			int goals, int assists, int ycards, int rcards, int minutesplayed, int owngoals, int rating) {
 		super();
 		this.id = id;
 		this.id_match = id_match;
@@ -66,6 +72,35 @@ public class PlayerMatchDetail {
 		this.ycards = ycards;
 		this.rcards = rcards;
 		this.minutesplayed = minutesplayed;
+		this.owngoals = owngoals;
+		this.rating = rating;
+	}
+
+
+
+
+
+
+	public int getOwngoals() {
+		return owngoals;
+	}
+
+
+
+	public void setOwngoals(int owngoals) {
+		this.owngoals = owngoals;
+	}
+
+
+
+	public int getRating() {
+		return rating;
+	}
+
+
+
+	public void setRating(int rating) {
+		this.rating = rating;
 	}
 
 
@@ -74,7 +109,8 @@ public class PlayerMatchDetail {
 	public String toString() {
 		return "PlayerMatchDetail [id=" + id + ", id_match=" + id_match + ", id_player=" + id_player + ", id_team="
 				+ id_team + ", position=" + position + ", season=" + season + ", goals=" + goals + ", assists="
-				+ assists + ", ycards=" + ycards + ", rcards=" + rcards + ", minutesplayed=" + minutesplayed + "]";
+				+ assists + ", ycards=" + ycards + ", rcards=" + rcards + ", minutesplayed=" + minutesplayed
+				+ ", owngoals=" + owngoals + ", rating=" + rating + "]";
 	}
 
 

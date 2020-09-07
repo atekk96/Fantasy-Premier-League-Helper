@@ -24,8 +24,17 @@ public class TeamServiceImplementation implements TeamService {
 
 
 	@Override
+	@Transactional
 	public Team getTeamById(int id) {
 		return teamDAO.getTeamById(id);
+	}
+
+
+	@Override
+	@Transactional
+	public void updateTeam(Team team) {
+		teamDAO.updateTeam(team);
+		
 	}
 
 }

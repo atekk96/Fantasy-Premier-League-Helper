@@ -46,4 +46,12 @@ public class TeamDAOImplementation implements TeamDAO {
 		}
 	}
 
+	@Override
+	@Transactional
+	public void updateTeam(Team team) {
+		Session currentSession = entityManager.unwrap(Session.class);
+		currentSession.saveOrUpdate(team);
+		
+	}
+
 }
